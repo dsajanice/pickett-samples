@@ -1,4 +1,4 @@
-FROM sample1/builder
+FROM sample1:builder
 MAINTAINER iansmith@igneous.io
 
 ##
@@ -9,6 +9,7 @@ MAINTAINER iansmith@igneous.io
 ##
 
 COPY update.sh /update.sh
+RUN chmod +x /update.sh
 ENV GOPATH /vendor:/sample1  
 
 #install deps and then build the libraries for future reference

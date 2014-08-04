@@ -1,4 +1,4 @@
-FROM sample1/runner
+FROM sample1:runner
 MAINTAINER iansmith@igenous.io
 
 ##
@@ -22,6 +22,8 @@ RUN hg clone -u release https://code.google.com/p/go
 WORKDIR /opt/go/src
 RUN ./all.bash
 
+RUN ln -s /opt/go/bin/go /usr/bin/go
+
 #
 # These env vars are needed by various build-related activities. This does not
 # include GOPATH, that's set in external.
@@ -30,4 +32,3 @@ RUN ./all.bash
 ENV PKG_CONFIG_PATH /opt/build/lib/pkgconfig/
 ENV LD_LIBRARY_PATH /opt/build/lib
 ENV GOROOT /opt/go
-ENV PATH /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/go/bin

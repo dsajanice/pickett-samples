@@ -23,26 +23,32 @@
 
 	//use this if you want to do optimizations like --rm=false or force a build igoring
 	//cache with --no-cache=true
-	"DockerBuildOptions" : [ "--rm=false"],
+	"DockerBuildOptions": {
+		"DontUseCache": false,
+		"RemoveContainer": false
+	},
 
 	//Sources means "sources" in the graph theory sense, no incoming edges so these have
 	//to be created from scratch, based on a Dockerfile
 	"Containers" : [
 		{
 			//this tag includes our go build tools (build from source) and VCS like mercurial and git
-			"Tag" : "sample1/builder",
+			"Repository": "sample1",
+			"Tag" : "builder",
 			"Directory" : "container/builder",  //directory, relative to this file	
-			"DependsOn" : ["sample1/runner"] 
+			"DependsOn" : ["sample1:runner"] 
 		},
 		{
 			//this tag includes all of our vendor (3rd party) libraries
-			"Tag" : "sample1/external",
+			"Repository": "sample1",
+			"Tag" : "external",
 			"Directory" : "container/external", //directory, relative to this file
-			"DependsOn" : [ "sample1/builder"] 
+			"DependsOn" : [ "sample1:builder"] 
 		},
 		{
 			//base image + our system changes (curl + libzmq built from source)
-			"Tag" : "sample1/runner",
+			"Repository": "sample1",
+			"Tag" : "runner",
 			"Directory" : "container/runner" //directory, relative to this file
 		}
 	],
@@ -50,49 +56,52 @@
 	//go source code operation
 	"GoBuilds" : [
 		{
-			"RunIn" : "sample1/external",
+			"Repository" : "sample1",
+			"Tag": "build",
+			"RunIn" : "sample1:external",
 			"Packages": [ 
 				"sample1/wuclient",  //package name, not a path
 				"sample1/wuserver"   //package name, not a path
-			],
-			"Tag": "build"
+			]
 		}
 	],
-
-	//XXX This is pretty awful.  This *assumes* that the source code is where the
-	//XXX artifact is placed, which is likely only true for some cases.  It further
-	//XXX assumes that you can run cp inside a container to grab the stuff off the
-	//XXX mount point and into the target.
 
 	//artifacts are things that are extract from one container and placed in a different one
 	"Extractions" : [
 		{
-			"RunIn" : "build", //XXXX Because this is hacky, we end up not using this
-			"MergeWith" : "sample1/runner",
-			"Artifacts": {
-				//this table maps a build artifact (a path relative to the CodeVolume
-				//declared above) to a destination artifact (path in the merge container).
-				"/sample1/bin/wuserver": "/wuserver",
-				"/sample1/bin/wuclient": "/wuclient"
-			},
-			"Tag": "candidate"
+			"Repository":"sample1",
+			"Tag": "candidate",
+			"RunIn" : "sample1:build", //XXXX Because this is hacky, we end up not using this
+			"MergeWith" : "sample1:runner",
+			"Artifacts": [
+				{
+					"BuiltPath": "/sample1/bin/wuserver",
+					"IsDirectory" : false,
+					"DestinationPath": "/wuserver"
+				},
+				{
+					"BuiltPath": "/sample1/bin/wuclient",
+					"IsDirectory" : false,
+					"DestinationPath": "/wuclient"					
+				}
+			]
 		}
 	],
 	
-	//Layer3 setups are simple IP-based configurations.  If you "run" this setup with 
-	//pickett -run=weather-client it will launch the server container first since
+	//Network are simple IP-based configurations.  If you "run" this setup with 
+	//pickett weather-client it will launch the server container first since
 	//the requested container (weather-client) consumes the server container.  The server is
 	//visible in the client as the hostname server (in /etc/hosts) for IP container.  
 	"Networks" : [
 		{
 			"Name" : "weather-server", //container name will be weather-server
-			"RunIn": "candidate", //which image to boot this from
+			"RunIn": "sample1:candidate", //which image to boot this from
 			"EntryPoint" : [ "/wuserver" ], //arguments to run
 			"Policy" : "FRESH"
 		},
 		{
 			"Name" : "weather-client", //container will be weather-client
-			"RunIn" : "candidate", //image to run in has no go tooling
+			"RunIn" : "sample1:candidate", //image to run in has no go tooling
 			"EntryPoint" : [ "/wuclient", "94607" ], //made with fear and loathing in Oakland, CA
 			"Policy" : "ALWAYS",
 			"Consumes" : [ "weather-server"] //this is "linked" into this container

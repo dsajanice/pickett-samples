@@ -76,13 +76,14 @@
 		{
 			"Name" : "pgserver", //service name will be pgserver
 			"RunIn": "sample2/postgres", //which image to boot this from
-			"EntryPoint": ["fart"] //we use the built in entry point
+			"Policy": "CONTINUE"
 		},
 		{
 			"Name" : "copier", //container will be weather-client
 			"RunIn" : "candidate", //image to run in has no go tooling
 			"EntryPoint" : [ "/copier" ], //made with fear and loathing in Oakland, CA
-			"Consumes" : [ "pgserver" ] //this is "linked" into this container
+			"Consumes" : [ "pgserver" ], //this is "linked" into this container
+			"Policy" : "ALWAYS"
 		}
 	]	
 }
