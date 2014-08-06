@@ -24,8 +24,8 @@
 	//use this if you want to do optimizations like --rm=false or force a build igoring
 	//cache with --no-cache=true
 	"DockerBuildOptions": {
-		"DontUseCache": false,
-		"RemoveContainer": false
+		"DontUseCache": true,
+		"RemoveContainer": true
 	},
 
 	//Sources means "sources" in the graph theory sense, no incoming edges so these have
@@ -76,13 +76,15 @@
 			"Artifacts": [
 				{
 					"BuiltPath": "/sample1/bin/wuserver",
-					"IsDirectory" : false,
-					"DestinationPath": "/wuserver"
+					"DestinationDir": "/"
 				},
 				{
 					"BuiltPath": "/sample1/bin/wuclient",
-					"IsDirectory" : false,
-					"DestinationPath": "/wuclient"					
+					"DestinationDir": "/"
+				},
+				{
+					"BuiltPath": "/bin/ls",
+					"DestinationDir": "/"					
 				}
 			]
 		}
