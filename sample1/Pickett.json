@@ -16,10 +16,12 @@
 {
 
 	//when doing Go-related things, you usually want to mount your source code
-	"CodeVolume" :{
-		"Directory" : "go", //directory, relative to this file
-		"MountedAt" : "/sample1" //usually use your project name
-	},
+	"CodeVolumes" : [
+        {
+            "Directory" : "go", //directory, relative to this file
+            "MountedAt" : "/sample1" //usually use your project name
+        }
+    ],
 
 	//use this if you want to do optimizations like --rm=false or force a build igoring
 	//cache with --no-cache=true
@@ -77,12 +79,12 @@
 				{
 					"BuiltPath": "/sample1/bin/wuserver",
 					"IsDirectory" : false,
-					"DestinationPath": "/wuserver"
+					"DestinationDir": "/"
 				},
 				{
 					"BuiltPath": "/sample1/bin/wuclient",
 					"IsDirectory" : false,
-					"DestinationPath": "/wuclient"					
+					"DestinationDir": "/"					
 				}
 			]
 		}
