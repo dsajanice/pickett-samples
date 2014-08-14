@@ -73,17 +73,15 @@
 		{
 			"Repository":"sample1",
 			"Tag": "candidate",
-			"RunIn" : "sample1:build", //XXXX Because this is hacky, we end up not using this
+			"RunIn" : "sample1:build",
 			"MergeWith" : "sample1:runner",
 			"Artifacts": [
 				{
 					"BuiltPath": "/sample1/bin/wuserver",
-					"IsDirectory" : false,
 					"DestinationDir": "/"
 				},
 				{
 					"BuiltPath": "/sample1/bin/wuclient",
-					"IsDirectory" : false,
 					"DestinationDir": "/"					
 				}
 			]
@@ -94,19 +92,21 @@
 	//pickett weather-client it will launch the server container first since
 	//the requested container (weather-client) consumes the server container.  The server is
 	//visible in the client as the hostname server (in /etc/hosts) for IP container.  
-	"Networks" : [
-		{
-			"Name" : "weather-server", //container name will be weather-server
-			"RunIn": "sample1:candidate", //which image to boot this from
-			"EntryPoint" : [ "/wuserver" ], //arguments to run
-			"Policy" : "FRESH"
-		},
-		{
-			"Name" : "weather-client", //container will be weather-client
-			"RunIn" : "sample1:candidate", //image to run in has no go tooling
-			"EntryPoint" : [ "/wuclient", "94607" ], //made with fear and loathing in Oakland, CA
-			"Policy" : "ALWAYS",
-			"Consumes" : [ "weather-server"] //this is "linked" into this container
-		}
-	]	
+	"Topologies" : {
+		"ex1" : [
+			{
+				"Name" : "weather-server", //container name will be weather-server
+				"RunIn": "sample1:candidate", //which image to boot this from
+				"EntryPoint" : [ "/wuserver" ], //arguments to run
+				"Policy" : "FRESH"
+			},
+			{
+				"Name" : "weather-client", //container will be weather-client
+				"RunIn" : "sample1:candidate", //image to run in has no go tooling
+				"EntryPoint" : [ "/wuclient", "94607" ], //made with fear and loathing in Oakland, CA
+				"Policy" : "ALWAYS",
+				"Consumes" : [ "weather-server"] //this is "linked" into this container
+			}
+		]
+	}
 }
