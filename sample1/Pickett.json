@@ -7,7 +7,7 @@
 //
 // The connectivity is supplied by zeromq which gets installed (libzmq) in the 'sample1/runner'
 // image; the go language bindings are from github.com/pebbe/zeromq4 and are installed
-// in the 'sample1/external' image.  
+// in the 'sample1:external' image.  
 //
 // When run, the client connects to the server via TCP and selects a zipcode that it
 // wants to listen for information about.
@@ -89,7 +89,7 @@
 	],
 	
 	//Network are simple IP-based configurations.  If you "run" this setup with 
-	//pickett weather-client it will launch the server container first since
+	//pickett run ex1.weather-client it will launch the server container first since
 	//the requested container (weather-client) consumes the server container.  The server is
 	//visible in the client as the hostname server (in /etc/hosts) for IP container.  
 	"Topologies" : {
