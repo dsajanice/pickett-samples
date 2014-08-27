@@ -38,14 +38,14 @@
 			"Repository": "sample1",
 			"Tag" : "builder",
 			"Directory" : "container/builder",  //directory, relative to this file	
-			"DependsOn" : ["sample1:runner"] 
+			"DependsOn" : [ "sample1:runner" ]
 		},
 		{
 			//this tag includes all of our vendor (3rd party) libraries
 			"Repository": "sample1",
 			"Tag" : "external",
 			"Directory" : "container/external", //directory, relative to this file
-			"DependsOn" : [ "sample1:builder"] 
+			"DependsOn" : [ "sample1:builder" ]
 		},
 		{
 			//base image + our system changes (curl + libzmq built from source)
@@ -94,19 +94,21 @@
 	//pickett weather-client it will launch the server container first since
 	//the requested container (weather-client) consumes the server container.  The server is
 	//visible in the client as the hostname server (in /etc/hosts) for IP container.  
-	"Networks" : [
-		{
-			"Name" : "weather-server", //container name will be weather-server
-			"RunIn": "sample1:candidate", //which image to boot this from
-			"EntryPoint" : [ "/wuserver" ], //arguments to run
-			"Policy" : "FRESH"
-		},
-		{
-			"Name" : "weather-client", //container will be weather-client
-			"RunIn" : "sample1:candidate", //image to run in has no go tooling
-			"EntryPoint" : [ "/wuclient", "94607" ], //made with fear and loathing in Oakland, CA
-			"Policy" : "ALWAYS",
-			"Consumes" : [ "weather-server"] //this is "linked" into this container
-		}
-	]	
+	"Topologies" : {
+        "sample1" : [
+            {
+                "Name" : "weather-server", //container name will be weather-server
+                "RunIn": "sample1:candidate", //which image to boot this from
+                "EntryPoint" : [ "/wuserver" ], //arguments to run
+                "Policy" : "FRESH"
+            },
+            {
+                "Name" : "weather-client", //container will be weather-client
+                "RunIn" : "sample1:candidate", //image to run in has no go tooling
+                "EntryPoint" : [ "/wuclient", "94607" ], //made with fear and loathing in Oakland, CA
+                "Policy" : "ALWAYS",
+                "Consumes" : [ "weather-server" ] //this is "linked" into this container
+            }
+        ]
+	}	
 }
