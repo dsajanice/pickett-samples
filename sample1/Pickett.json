@@ -100,15 +100,17 @@
                 "Name" : "weather-server", //container name will be weather-server
                 "RunIn": "sample1:candidate", //which image to boot this from
                 "EntryPoint" : [ "/wuserver" ], //arguments to run
-                "Policy" : "FRESH"
+                "Policy" : "FRESH",
+		"WaitFor" : true
             },
             {
                 "Name" : "weather-client", //container will be weather-client
                 "RunIn" : "sample1:candidate", //image to run in has no go tooling
                 "EntryPoint" : [ "/wuclient", "94607" ], //made with fear and loathing in Oakland, CA
                 "Policy" : "ALWAYS",
-                "Consumes" : [ "weather-server" ] //this is "linked" into this container
-            }
+                "Consumes" : [ "weather-server" ], //this is "linked" into this container
+		"WaitFor" : true
+	    }
         ]
 	}	
 }
